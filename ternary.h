@@ -20,6 +20,13 @@ public:
 
     Ternary operator +(const Ternary &right);
     Ternary operator *(const Ternary &right);
+    Ternary operator /(Ternary &right);
+    Ternary operator -();
+    Ternary operator -(const Ternary &right);
+
+    Ternary deleteFirstU(Ternary &ternary);
+    Ternary decToTri(int dec);
+    int triToDec();
 
     ~Ternary();
 

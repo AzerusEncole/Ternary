@@ -121,16 +121,8 @@ Ternary Ternary::operator +(const Ternary &right) {
         result.value.push_front(Trit(transfer));
     }
 
-    auto itResult = result.value.begin();
-
-    while ((*itResult).getValue() == U) {
-        result.value.pop_front();
-        ++itResult;
-    }
-
-    return result;
+    return deleteFirstU(result);
 }
-
 
 Ternary Ternary::operator *(const Ternary &right) {
     auto leftTern = this->value;
@@ -174,5 +166,93 @@ Ternary Ternary::operator *(const Ternary &right) {
     return sum;
 }
 
-Ternary::~Ternary() {}
+Ternary Ternary::operator /(Ternary &right) {
+    auto leftDec = triToDec();
+    auto rightDec = right.triToDec();
+    auto result = leftDec / rightDec;
 
+    return decToTri(result);
+}
+
+Ternary Ternary::operator -() {
+    std::list<Trit> t;
+
+    for (auto trit : this->value) {
+        t.push_back(!trit);
+    }
+
+    return Ternary(t);
+}
+
+Ternary Ternary::operator -(const Ternary &right) {
+    auto r = -Ternary(right.value);
+    return *this + r;
+}
+
+Ternary Ternary::decToTri(int dec) {
+    if (dec == 0) return Ternary("U");
+
+    bool isNegative = false;
+
+    if (dec < 0) {
+        isNegative = true;
+        dec = -dec;
+    }
+
+    int residue;
+    std::list<Trit> t;
+
+    while (dec != 0) {
+        residue = dec % 3;
+        dec /= 3;
+
+        if (residue > 1.5) dec++;
+
+        if (residue == 0) {
+            t.push_front(Trit(U));
+        } else if (residue == 1) {
+            t.push_front(Trit(T));
+        } else {
+            t.push_front(Trit(F));
+        }
+    }
+
+    auto ternary = Ternary(t);
+
+    return (isNegative) ? -ternary : ternary;
+}
+
+int Ternary::triToDec() {
+    int power = this->value.size() - 1;
+    int result = 0;
+    Trinity trinity;
+
+    for (auto t : this->value) {
+        trinity = t.getValue();
+
+        if (trinity == T) {
+            result += std::pow(3, power);
+
+        } else if (trinity == F) {
+            result -= std::pow(3, power);
+        }
+
+        power--;
+    }
+    return result;
+}
+
+Ternary Ternary::deleteFirstU(Ternary &t) {
+    if (t.value.size() == 1) return t;
+
+    auto itResult = t.value.begin();
+
+    while ((*itResult).getValue() == U) {
+        t.value.pop_front();
+        ++itResult;
+    }
+
+    return t;
+}
+
+Ternary::~Ternary() {}
